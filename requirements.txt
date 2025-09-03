@@ -1,0 +1,58 @@
+# 수치 연산 및 데이터 처리
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.2
+scipy==1.10.1
+tqdm==4.67.1
+matplotlib==3.7.2
+
+# 오디오 처리
+librosa==0.11.0
+SpeechRecognition==3.10.4
+soundfile==0.13.1
+pydub==0.25.1
+
+# KoBERT 기반 텍스트 분류 (HuggingFace 구조)
+packaging==25.0
+regex==2024.11.6
+sacremoses==0.1.1
+PyYAML==6.0.2
+
+# Flask API 및 CORS
+Flask==3.0.3
+flask-cors==5.0.0
+werkzeug==3.0.6
+
+# 🇰🇷 형태소 분석기 (단어 강조 기능용)
+konlpy==0.6.0
+jpype1==1.5.2
+
+# 화자 분리 및 STT 관련
+resemblyzer==0.1.4
+webrtcvad==2.0.10
+
+# 기타
+requests==2.32.3
+markupsafe==2.1.5
+jinja2==3.1.6
+click==8.1.8
+itsdangerous==2.2.0
+six==1.17.0
+filelock==3.16.1
+urllib3==1.26.20
+charset-normalizer==3.4.1
+idna==3.10
+certifi==2025.1.31
+pytz==2024.1
+python-dateutil==2.9.0.post0
+joblib==1.4.2
+threadpoolctl==3.5.0
+lazy-loader==0.4
+cffi==1.17.1
+audioread==3.0.1
+soxr==0.3.7
+numba==0.58.1
+llvmlite==0.41.1
+msgpack==1.1.0
+decorator==5.2.1
+blinker==1.8.2

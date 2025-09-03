@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보이스피싱 탐지</title>
+</head>
+<body>
+    <h1>보이스피싱 탐지 시스템</h1>
+
+    <p>입력 방식을 선택하세요:</p>
+    <input type="radio" id="textOption" name="inputType" value="text" checked>
+    <label for="textOption">텍스트 입력</label>
+    <input type="radio" id="audioOption" name="inputType" value="audio">
+    <label for="audioOption">오디오 파일 업로드</label>
+
+    <div id="textInputSection" style="margin-top: 20px;">
+        <textarea id="inputText" rows="4" cols="50" placeholder="보이스피싱 문장을 입력하세요"></textarea>
+    </div>
+
+    <div id="audioInputSection" style="margin-top: 20px; display: none;">
+        <input type="file" id="audioFile" accept="audio/*">
+    </div>
+
+    <br>
+    <button onclick="predictPhishing()">탐지하기</button>
+
+    <div id="result" style="margin-top: 30px;"></div>
+
+    <script>
+        // 입력 방식에 따라 UI 전환
+        document.getElementsByName('inputType').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const textInput = document.getElementById('textInputSection');
+                const audioInput = document.getElementById('audioInputSection');
+
+                if (this.value === 'text') {
+                    textInput.style.display = 'block';
+                    audioInput.style.display = 'none';
+                } else {
+                    textInput.style.display = 'none';
+                    audioInput.style.display = 'block';
+                }
+            });
+        });
+
+        function predictPhishing() {
+            const inputType = document.querySelector('input[name="inputType"]:checked').value;
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "예측 중입니다...";
+
+            if (inputType === 'text') {
+                const text = document.getElementById("inputText").value;
+                if (!text.trim()) {
+                    alert("텍스트를 입력해주세요.");
+                    resultDiv.innerHTML = "";
+                    return;
+                }
+
+                fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: text })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResult(data);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    resultDiv.innerHTML = "오류가 발생했습니다. 다시 시도해주세요.";
+                });
+
+            } else if (inputType === 'audio') {
+                const fileInput = document.getElementById("audioFile");
+                if (fileInput.files.length === 0) {
+                    alert("오디오 파일을 선택해주세요.");
+                    resultDiv.innerHTML = "";
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append("audio_file", fileInput.files[0]);
+
+                fetch("/predict_audio", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayResult(data);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    resultDiv.innerHTML = "오류가 발생했습니다. 다시 시도해주세요.";
+                });
+            }
+        }
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById("result");
+
+            if (!data || data.error) {
+                resultDiv.innerHTML = `<h3 style="color: orange;">오류: ${data.error || "응답이 올바르지 않습니다."}</h3>`;
+                return;
+            }
+
+            const labelColor = {
+                "아님": "green",
+                "의심": "orange",
+                "위험": "darkorange",
+                "확정": "red"
+            };
+
+            const label = data.final_label || "알 수 없음";
+            const color = labelColor[label] || "black";
+
+            resultDiv.innerHTML = `
+                <h3 style="color: ${color};">탐지 결과: ${label}</h3>
+                <p>텍스트(STT) 결과: <i>${data.text}</i></p>
+                <p>LLM 점수: <strong>${data.llm_score}</strong> / 100</p>
+                <p>딥페이크 점수: <strong>${data.voice_score}</strong> / 30 (${data.deepfake_score})</p>
+                <p>총점: <strong>${data.total_score}</strong> / 130</p>
+            `;
+        }
+    </script>
+</body>
+</html>

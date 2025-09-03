@@ -1,0 +1,35 @@
+{
+  "data_paths": {
+    "real_audio_dir": "deepvoice_detection/real_audio",
+    "deepfake_audio_dir": "deepvoice_detection/deepfake_audio"
+  },
+  "feature_params": {
+    "n_mfcc": 13,
+    "n_fft": 2048,
+    "hop_length": 512,
+    "max_length": 500
+  },
+  "model_params": {
+    "num_classes": 2,
+    "conv_in_channels": 13,
+    "conv_out_channels": 32,
+    "lstm_hidden_size": 64,
+    "fc1_out_features": 128
+  },
+  "training_params": {
+    "num_epochs": 10,  
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "num_workers": 0,
+    "validation_split": 0.2, 
+    "random_seed": 42, 
+    "lr_scheduler_patience": 5, 
+    "lr_scheduler_factor": 0.1,  
+    "early_stopping_patience": 10 
+  },
+  "output_paths": {
+    "log_csv_path": "static/csv/train_deepfake_metrics_log.csv",
+    "model_save_path": "deepvoice_detection/model/last_epoch_model.pt", 
+    "best_model_save_path": "deepvoice_detection/model/best_f1_model.pt" 
+  }
+}

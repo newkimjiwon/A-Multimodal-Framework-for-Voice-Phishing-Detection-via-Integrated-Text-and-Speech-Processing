@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing Detection</title>
+</head>
+<body>
+  <h1>보이스피싱 예측 시스템</h1>
+  <textarea id="inputText" rows="4" cols="50" placeholder="보이스피싱 문장을 입력하세요"></textarea><br>
+  <button id="predictButton">예측하기</button>
+
+  <h2>결과:</h2>
+  <p id="result"></p>
+
+  <script>
+    // 예측 버튼 클릭 시 실행되는 함수
+    document.getElementById('predictButton').addEventListener('click', function() {
+      // 텍스트박스에서 입력된 값 가져오기
+      const text = document.getElementById('inputText').value;
+
+      // 데이터 준비
+      const data = {
+        text: text
+      };
+
+      // fetch를 사용하여 POST 요청 보내기
+      fetch('http://127.0.0.1:5000/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'  // 요청 본문이 JSON임을 알림
+        },
+        body: JSON.stringify(data)  // 데이터를 JSON 형식으로 변환하여 요청 본문에 포함
+      })
+      .then(response => response.json())  // 서버의 응답을 JSON 형식으로 변환
+      .then(result => {
+        // 예측 결과 출력
+        if (result.phishing) {
+          document.getElementById('result').innerText = `이 문장은 보이스피싱입니다. 위험도: ${result.level}`;
+        } else {
+          document.getElementById('result').innerText = "이 문장은 보이스피싱이 아닙니다.";
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        document.getElementById('result').innerText = "오류가 발생했습니다. 다시 시도해 주세요.";
+      });
+    });
+  </script>
+</body>
+</html>
